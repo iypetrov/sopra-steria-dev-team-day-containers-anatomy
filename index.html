@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Contaoner's Anatomy</title>
+       	<link rel="icon" type="image/x-icon" href="public/small-logo.png"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/white.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/xcode.min.css" />
+    </head>
+    <style>
+        mark {
+            background-color: #ececec; 
+            color: #c6241d;              
+            border-radius: 10px;     
+        }
+    </style>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <h2>container's anatomy</h2>
+                </section>
+
+                <section>
+                    <h2>Who am I?</h2>
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="width: 50%;">
+                            <ul>
+                                <li>Ilia Petrov</li>
+                                <li>SE for ~3 years</li>
+                                <li>Main interests in Backend, Infrastructure & Cloud</li>
+                                <li>Currently working as a DevOps</li>
+                            </ul>
+                        </div>
+                        <div style="width: 50%; text-align: center;">
+                            <img src="public/me.jpg" alt="Description" style="max-width: 100%; height: auto; border: none;">
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>you can find all resources here</h3>
+                    <p>
+                        <a href="https://github.com/iypetrov/sopra-steria-dev-team-day-bash-scripts" target="_blank">
+                            https://github.com/iypetrov/sopra-steria-dev-team-day-containers-anatomy
+                        </a>
+                    </p>
+                </section>
+
+                <section>
+                    <h3>agenda for today</h3>
+                    <ul>
+                        <li>What is container and what problem does it solve?</li>
+                        <li>Container vs VM</li>
+                        <li>Docker vs Podman</li>
+                        <li>Main container primitives and building container from scratch</li>
+                        <li>Q&A</li>
+                    </ul>
+                </section>
+
+
+                <!-- Q&A -->
+                <section>
+                    <h2>q&a</h2>
+                </section>
+
+                <!-- Conclusion -->
+                <section>
+                    <h3>Thank you for your attention! ❤️</h3>
+                </section>
+            </div>
+        </div>
+
+        <footer style="position: fixed; bottom: 10px; left: 10px;">
+            <img src="public/big-logo.svg" alt="Sopra Steria Logo" style="width: 18rem; height: auto;" />
+        </footer>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/js/reveal.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+        <script>
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                slideNumber: false,
+                history: true,
+                center: true,
+                transition: 'slide'
+            });
+            hljs.highlightAll();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "sopra-steria-dev-team-day-containers-anatomy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "live-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iypetrov/sopra-steria-dev-team-day-bash-scripts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iypetrov/sopra-steria-dev-team-day-bash-scripts/issues"
+  },
+  "homepage": "https://github.com/iypetrov/sopra-steria-dev-team-day-bash-scripts#readme",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
