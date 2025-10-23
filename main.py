@@ -1,33 +1,43 @@
 import os
 import sys
 import subprocess
-import multiprocessing
 
 
 def run():
-    flags = os.CLONE_NEWUTS | os.CLONE_NEWPID
-    os.unshare(flags)
+    os.unshare(os.CLONE_NEWUTS | os.CLONE_NEWPID | os.CLONE_NEWNS)
 
-    p = multiprocessing.Process(target=child)
-    p.start()
-    p.join()
+    pid = os.fork()
+    if pid == 0:
+        child()
+    else:
+        os.waitpid(pid, 0)
 
 
 def child():
     subprocess.run(["hostname", "container"])
+
+    os.chroot("tinyroot")
+    os.chdir("/")
+
+    os.makedirs("/proc", exist_ok=True)
+    subprocess.run(["mount", "-t", "proc", "proc", "/proc"])
+
     cmd = sys.argv[2:]
-    os.execvp(cmd[0], cmd)
+    pid = os.fork()
+    if pid == 0:
+        os.execvp(cmd[0], cmd)
+    else:
+        os.waitpid(pid, 0)
+        subprocess.run(["umount", "/proc"])
 
 
 def main():
     if len(sys.argv) < 2:
-        print("There should be at least 2 arguments")
+        print("Usage: python main.py run <command> [args...]")
         sys.exit(1)
 
     if sys.argv[1] == "run":
         run()
-    elif sys.argv[1] == "child":
-        child()
 
 
 if __name__ == "__main__":
