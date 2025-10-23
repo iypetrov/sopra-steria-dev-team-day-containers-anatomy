@@ -6,6 +6,8 @@ def run():
     print(cmd)
 
 
+# docker         run image <cmd> <params>
+# python main.py run       <cmd> <params>
 def main():
     if len(sys.argv) < 2:
         print("Usage: python main.py run <command> [args...]")
