@@ -12,6 +12,7 @@ def run():
 def main():
     if len(sys.argv) < 2:
         sys.exit(1)
+        print("There should be at least 2 arguments")
 
     if sys.argv[1] == "run":
         run()
