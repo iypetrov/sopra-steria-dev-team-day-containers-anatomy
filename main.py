@@ -16,6 +16,8 @@ def run():
 def child():
     subprocess.run(["hostname", "container"])
 
+    cgroup()
+
     os.chroot("tinyroot")
     os.chdir("/")
 
@@ -29,6 +31,17 @@ def child():
     else:
         os.waitpid(pid, 0)
         subprocess.run(["umount", "/proc"])
+
+
+def cgroup():
+    path = "/sys/fs/cgroup/soprasteria"
+    os.makedirs(path, exist_ok=True)
+
+    with open(os.path.join(path, "pids.max"), "w") as f:
+        f.write("20")
+
+    with open(os.path.join(path, "cgroup.procs"), "w") as f:
+        f.write(str(os.getpid()))
 
 
 def main():

@@ -12,3 +12,4 @@ ps uses /proc to get the list of processes
 so to do this our contianer needs its own /proc
 here we are going to use the chroot
 use ps aux to see all processes
+or ps -C sleep
