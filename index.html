@@ -58,7 +58,6 @@
                     <li>What problem does container solve?</li>
                     <li>Container vs VM</li>
                     <li>Docker vs Podman</li>
-                    <li>Container's primitives</li>
                     <li>Demo: building container from scratch</li>
                     <li>Q&A</li>
                 </ul>
@@ -75,6 +74,36 @@
                         <li>Managed by orchestration platforms like Kubernetes</li>
                     </ul>
                 </section>
+                <section>
+                    <h2>managing files & directories</h2>
+                    <pre><code class="language-diff">import sys
+
+def run():
+    cmd = sys.argv[2:]
+    print(cmd)
+
+# docker         run image <cmd> <params>
+# python main.py run       <cmd> <params>
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python main.py run <command> [args...]")
+        sys.exit(1)
+
+    if sys.argv[1] == "run":
+        run()
+
+if __name__ == "__main__":
+    main()
+                    </code></pre>
+                </section> 
+                <section>
+                    <h2>managing files & directories</h2>
+                    <pre><code class="language-diff">def run():
+    cmd = sys.argv[2:]
+-   print(cmd)
++   os.execvp(cmd[0], cmd)
+                    </code></pre>
+                </section> 
 
                 <section>
                     <h2>Problems containers solve</h2>
