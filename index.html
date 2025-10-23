@@ -113,6 +113,32 @@
             </section>
 
             <section>
+                <h2>Docker vs Podman</h2>
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="width: 50%;">
+                        <div style="width: 100%; text-align: center;">
+                            <img src="public/docker.svg" alt="Description" style="max-width: 100%; height: auto; border: none; box-shadow: none; outline: none;">
+                        </div>
+                        <ul>
+                            <li>Uses a background daemon(dockerd) to manage containers</li>
+                            <li>Needs root level permissions</li>
+                            <li>Central daemon = bigger attack surface</li>
+                        </ul>
+                    </div>
+                    <div style="width: 50%;">
+                        <div style="width: 100%; text-align: center;">
+                            <img src="public/podman.svg" alt="Description" style="max-width: 100%; height: auto; border: none; box-shadow: none; outline: none;">
+                        </div>
+                        <ul>
+                            <li>Daemonless — runs containers directly as user processes</li>
+                            <li>Designed to run rootless by default</li>
+                            <li>No daemon + rootless = more secure by design</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
                 <section>
                     <h2>Building container from scratch</h2>
                 </section>
@@ -139,8 +165,8 @@ def run():
     cmd = sys.argv[2:]
     print(cmd)
 
-# docker         run image <cmd> <params>
-# python main.py run       <cmd> <params>
+# docker         run image cmd params
+# python main.py run       cmd params
 def main():
     if len(sys.argv) < 2:
         print("Usage: python main.py run <command> [args...]")
