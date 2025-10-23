@@ -2,13 +2,18 @@ import os
 import sys
 import subprocess
 
+
 def run():
     cmd = sys.argv[2:]
-    print(cmd)
-    subprocess.run(cmd, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    subprocess.run(
+        cmd,
+        stdin=sys.stdin,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+        preexec_fn=lambda: os.unshare(os.CLONE_NEWUTS)
+    )
 
-# docker         run image <cmd> <params>
-# python main.py run       <cmd> <params>
+
 def main():
     if len(sys.argv) < 2:
         sys.exit(1)
@@ -16,6 +21,7 @@ def main():
 
     if sys.argv[1] == "run":
         run()
+
 
 if __name__ == "__main__":
     main()
