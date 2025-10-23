@@ -54,7 +54,7 @@
             <section>
                 <h3>agenda for today</h3>
                 <ul>
-                    <li>What is container?</li>
+                    <li>What is a container?</li>
                     <li>What problem does container solve?</li>
                     <li>Container vs VM</li>
                     <li>Docker vs Podman</li>
@@ -63,19 +63,76 @@
                 </ul>
             </section>
 
-            <!-- What is container and what problem does it solve? -->
+            <section>
+                <h2>What is a container?</h2>
+                <ul>
+                    <li>Lightweight, portable, self-contained executable images</li>
+                    <li>Contains software applications and their dependencies</li>
+                    <li>Deploy and run applications consistently across different environments</li>
+                    <li>Managed by orchestration platforms like Kubernetes, Docker Swarm, HashiCorp Nomad</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>What problem does container solve?</h2>
+                <ul>
+                    <li>"It works on my machine" - environment consistency</li>
+                    <li>Dependency hell - isolated application dependencies</li>
+                    <li>Deployment complexity - fast, reliable deployments</li>
+                    <li>Resource waste - better resource utilization</li>
+                    <li>Scaling challenges - easy horizontal scaling</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Container vs Virtual Machine</h2>
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="width: 45%;">
+                        <h3>Containers</h3>
+                        <ul>
+                            <li>OS Level virtualization</li>
+                            <li>Shares host OS kernel</li>
+                            <li>Small & Lightweight</li>
+                            <li>Faster startup</li>
+                            <li>Lower resource usage</li>
+                            <li>Process-level isolation</li>
+                        </ul>
+                    </div>
+                    <div style="width: 55%;">
+                        <h3>Virtual Machines</h3>
+                        <ul>
+                            <li>Hardware level virtualization</li>
+                            <li>Full guest OS</li>
+                            <li>Big & Heavy</li>
+                            <li>Slow startup</li>
+                            <li>Higher resource usage</li>
+                            <li>Hardware-level isolation</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
             <section>
                 <section>
-                    <h2>What is a container?</h2>
-                    <ul>
-                        <li><strong>Lightweight, portable, self-contained executable images</strong></li>
-                        <li>Contains software applications and their dependencies</li>
-                        <li>Deploy and run applications consistently across different environments</li>
-                        <li>Managed by orchestration platforms like Kubernetes</li>
-                    </ul>
+                    <h2>Building container from scratch</h2>
                 </section>
                 <section>
-                    <h2>managing files & directories</h2>
+                    <h2>Main container's primitives</h2>
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="width: 30%;">
+                            <ul>
+                                <li>Namespaces</li>
+                                <li>Chroot</li>
+                                <li>Cgroups</li>
+                            </ul>
+                        </div>
+                        <div style="width: 70%; text-align: center;">
+                            <img src="public/container.jpeg" alt="Description" style="max-width: 100%; height: auto; border: none;">
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h2>Starting point - just print the arguments</h2>
                     <pre><code class="language-diff">import sys
 
 def run():
@@ -97,125 +154,55 @@ if __name__ == "__main__":
                     </code></pre>
                 </section> 
                 <section>
-                    <h2>managing files & directories</h2>
+                    <h2>now let's execute what we pass as arguments</h2>
                     <pre><code class="language-diff">def run():
     cmd = sys.argv[2:]
 -   print(cmd)
 +   os.execvp(cmd[0], cmd)
                     </code></pre>
                 </section> 
-
                 <section>
-                    <h2>Problems containers solve</h2>
+                    <h2>Namespaces</h2>
+                    <blockquote style="width: 100%; font-style: italic; border-left: 4px solid #ccc; padding-left: 1em; color: #555;">
+                        A namespace wraps a global system resource in an abstraction that makes it appear to the processes within the namespace that they have their own isolated instance of the global resource. Changes to the global resource are visible to other processes that are members of the namespace, but are invisible to other processes. One use of namespaces is to implement containers.
+                    </blockquote>
+                </section>
+                <section>
+                    <h2>Namespaces</h2>
                     <ul>
-                        <li><strong>"It works on my machine"</strong> - Environment consistency</li>
-                        <li><strong>Dependency hell</strong> - Isolated application dependencies</li>
-                        <li><strong>Deployment complexity</strong> - Fast, reliable deployments</li>
-                        <li><strong>Resource waste</strong> - Better resource utilization</li>
-                        <li><strong>Scaling challenges</strong> - Easy horizontal scaling</li>
+                        <li>Unix Timesharing System</li>
+                        <li>Process IDs</li>
+                        <li>Mounts</li>
+                        <li>Network</li>
+                        <li>User IDs</li>
+                        <li>InterProcess Comms</li>
                     </ul>
                 </section>
-
                 <section>
-                    <h2>Container benefits</h2>
-                    <ul>
-                        <li><strong>Lightweight & portable</strong> - MBs vs GBs for VMs</li>
-                        <li><strong>Fast startup</strong> - Seconds vs minutes</li>
-                        <li><strong>Microservices support</strong> - Decompose monoliths</li>
-                        <li><strong>Cost effective</strong> - Better resource utilization</li>
-                        <li><strong>DevOps friendly</strong> - CI/CD pipeline integration</li>
-                    </ul>
+                    <h2>Let's now create a namespace that restricts the hostname</h2>
+                    <pre><code class="language-diff">def run():
++   os.unshare(os.CLONE_NEWUTS)
++   pid = os.fork()
++   if pid == 0:
++       child()
++   else:
++       os.waitpid(pid, 0)
++ 
++def child():
++   subprocess.run(["hostname", "container"])
+    cmd = sys.argv[2:]
+    os.execvp(cmd[0], cmd)
+                    </code></pre>
                 </section>
 
             </section>
 
-            <!-- Container vs VM -->
-            <section>
-                <section>
-                    <h2>Container vs Virtual Machine</h2>
-                    <div style="display: flex; justify-content: space-between;">
-                        <div style="width: 48%;">
-                            <h3>Containers</h3>
-                            <ul>
-                                <li><strong>OS Level</strong> virtualization</li>
-                                <li>Shares host OS kernel</li>
-                                <li>Size: MBs</li>
-                                <li>Boot time: Seconds</li>
-                                <li>Lower resource usage</li>
-                                <li>Process-level isolation</li>
-                            </ul>
-                        </div>
-                        <div style="width: 48%;">
-                            <h3>Virtual Machines</h3>
-                            <ul>
-                                <li><strong>Hardware level</strong> virtualization</li>
-                                <li>Full guest OS</li>
-                                <li>Size: GBs</li>
-                                <li>Boot time: Minutes</li>
-                                <li>Higher resource usage</li>
-                                <li>Hardware-level isolation</li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
-
-                <section>
-                    <h2>Architecture Comparison</h2>
-                    <div style="display: flex; justify-content: space-between;">
-                        <div style="width: 48%;">
-                            <h3>Containers</h3>
-                            <ul>
-                                <li>Share host OS kernel</li>
-                                <li>Lightweight</li>
-                                <li>Faster startup</li>
-                                <li>Less isolation</li>
-                            </ul>
-                        </div>
-                        <div style="width: 48%;">
-                            <h3>Virtual Machines</h3>
-                            <ul>
-                                <li>Dedicated guest OS</li>
-                                <li>Resource-intensive</li>
-                                <li>Slower startup</li>
-                                <li>Strong isolation</li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
-
-                <section>
-                    <h2>Use Cases</h2>
-                    <div style="display: flex; justify-content: space-between;">
-                        <div style="width: 48%;">
-                            <h3>Containers are good for:</h3>
-                            <ul>
-                                <li>Microservices</li>
-                                <li>Web applications</li>
-                                <li>CI/CD pipelines</li>
-                                <li>Cloud-native apps</li>
-                                <li>Rapid deployment</li>
-                            </ul>
-                        </div>
-                        <div style="width: 48%;">
-                            <h3>VMs are good for:</h3>
-                            <ul>
-                                <li>Legacy applications</li>
-                                <li>Strong isolation needs</li>
-                                <li>Diverse OS requirements</li>
-                                <li>Security compliance</li>
-                                <li>Full OS control</li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
             </section>
 
-            <!-- Q&A -->
             <section>
                 <h2>q&a</h2>
             </section>
 
-            <!-- Conclusion -->
             <section>
                 <h3>Thank you for your attention! ❤️</h3>
             </section>
