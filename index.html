@@ -220,6 +220,72 @@ if __name__ == "__main__":
     os.execvp(cmd[0], cmd)
                     </code></pre>
                 </section>
+                <section>
+                    <h2>foo</h2>
+                    <pre><code class="language-diff">def run():
+-   os.unshare(os.CLONE_NEWUTS)
++   os.unshare(os.CLONE_NEWUTS | os.CLONE_NEWPID)
+...
+
+def child():
+    subprocess.run(["hostname", "container"])
++   os.chroot("tinyroot")
++   os.chdir("/")
++   os.makedirs("/proc", exist_ok=True)
++   subprocess.run(["mount", "-t", "proc", "proc", "/proc"])
+    cmd = sys.argv[2:]
+    os.execvp(cmd[0], cmd)
+                    </code></pre>
+                </section>
+                <section>
+                    <h2>clean mount</h2>
+                    <pre><code class="language-diff">def child():
+    subprocess.run(["hostname", "container"])
+    os.chroot("tinyroot")
+    os.chdir("/")
+    os.makedirs("/proc", exist_ok=True)
+    subprocess.run(["mount", "-t", "proc", "proc", "/proc"])
+    cmd = sys.argv[2:]
++   pid = os.fork()
++   if pid == 0:
+        os.execvp(cmd[0], cmd)
++   else:
++       os.waitpid(pid, 0)
++       subprocess.run(["umount", "/proc"])
+
+                    </code></pre>
+                </section>
+                <section>
+                    <h2>Cgroup</h2>
+                    <blockquote style="width: 100%; font-style: italic; border-left: 4px solid #ccc; padding-left: 1em; color: #555;">
+                        Control  groups,  usually referred to as cgroups, are a Linux kernel feature which allow processes to be organized into hierarchical groups whose usage of various types of resources can then be limited and monitored.  The kernel's cgroup interface is provided through a pseudo-filesystem called cgroupfs.  Grouping is implemented in  the core cgroup kernel code, while resource tracking and limits are implemented in a set of per-resource-type subsystems (memory, CPU, and so on).
+                    </blockquote>
+                </section>
+                <section>
+                    <h2>Cgroup</h2>
+                    <ul>
+                        <li>Memory</li>
+                        <li>CPU</li>
+                        <li>I/O</li>
+                        <li>Process numbers</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Cgroup</h2>
+                    <pre><code class="language-diff">def child():
+    subprocess.run(["hostname", "container"])
++   cgroup()
+...
+
++def cgroup():
++    path = "/sys/fs/cgroup/soprasteria"
++    os.makedirs(path, exist_ok=True)
++    with open(os.path.join(path, "pids.max"), "w") as f:
++        f.write("20")
++    with open(os.path.join(path, "cgroup.procs"), "w") as f:
++        f.write(str(os.getpid()))
+                    </code></pre>
+                </section>
 
             </section>
 
