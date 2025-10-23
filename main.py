@@ -4,7 +4,7 @@ import subprocess
 
 
 def run():
-    os.unshare(os.CLONE_NEWUTS | os.CLONE_NEWPID | os.CLONE_NEWNS)
+    os.unshare(os.CLONE_NEWUTS | os.CLONE_NEWPID)
 
     pid = os.fork()
     if pid == 0:
