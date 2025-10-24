@@ -4,6 +4,7 @@ import subprocess
 
 
 def run():
+    print("The PID of the main process is:", os.getpid())
     os.unshare(os.CLONE_NEWUTS | os.CLONE_NEWPID)
 
     pid = os.fork()

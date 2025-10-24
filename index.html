@@ -143,7 +143,7 @@
                     <h2>Building container from scratch</h2>
                 </section>
                 <section>
-                    <h2>Linux concepts for a container</h2>
+                    <h2>Needed Linux concepts for containers</h2>
                     <div style="display: flex; align-items: center; justify-content: space-between;">
                         <div style="width: 30%;">
                             <ul>
@@ -159,9 +159,11 @@
                 </section>
                 <section>
                     <h2>Starting point - just print the arguments</h2>
-                    <pre><code class="language-diff">import sys
+                    <pre><code class="language-diff">import os
+import sys
 
 def run():
+    print("The PID of the main process is:", os.getpid())
     cmd = sys.argv[2:]
     print(cmd)
 
@@ -181,11 +183,12 @@ if __name__ == "__main__":
                 </section> 
                 <section>
                     <h2>now let's execute what we pass as arguments</h2>
-                    <pre><code class="language-diff">+import os
+                    <pre><code class="language-diff"> import os
  import subprocess                   
  ...
 
  def run():
+     print("The PID of the main process is:", os.getpid())
      cmd = sys.argv[2:]
 -    print(cmd)
 +    os.execvp(cmd[0], cmd)
@@ -211,6 +214,7 @@ if __name__ == "__main__":
                 <section>
                     <h2>Let's now create a namespace that restricts the hostname</h2>
                     <pre><code class="language-diff"> def run():
+     print("The PID of the main process is:", os.getpid())
 +    os.unshare(os.CLONE_NEWUTS)
      cmd = sys.argv[2:]
      os.execvp(cmd[0], cmd)
@@ -225,6 +229,7 @@ if __name__ == "__main__":
 
   
  def run():
+     print("The PID of the main process is:", os.getpid())
      os.unshare(os.CLONE_NEWUTS)
 +    pid = os.fork()
 +    if pid == 0:

@@ -1,7 +1,9 @@
+import os
 import sys
 
 
 def run():
+    print("The PID of the main process is:", os.getpid())
     cmd = sys.argv[2:]
     print(cmd)
 
