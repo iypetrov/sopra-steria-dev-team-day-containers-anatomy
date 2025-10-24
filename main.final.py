@@ -35,7 +35,7 @@ def child():
 
 
 def cgroup():
-    path = "/sys/fs/cgroup/soprasteria"
+    path = "/sys/fs/cgroup/system.slice/soprasteria"
     os.makedirs(path, exist_ok=True)
 
     with open(os.path.join(path, "pids.max"), "w") as f:
