@@ -181,10 +181,14 @@ if __name__ == "__main__":
                 </section> 
                 <section>
                     <h2>now let's execute what we pass as arguments</h2>
-                    <pre><code class="language-diff">def run():
-    cmd = sys.argv[2:]
--   print(cmd)
-+   os.execvp(cmd[0], cmd)
+                    <pre><code class="language-diff">+import os
+ import subprocess                   
+ ...
+
+ def run():
+     cmd = sys.argv[2:]
+-    print(cmd)
++    os.execvp(cmd[0], cmd)
                     </code></pre>
                 </section> 
                 <section>
@@ -206,52 +210,80 @@ if __name__ == "__main__":
                 </section>
                 <section>
                     <h2>Let's now create a namespace that restricts the hostname</h2>
-                    <pre><code class="language-diff">def run():
-+   os.unshare(os.CLONE_NEWUTS)
-+   pid = os.fork()
-+   if pid == 0:
-+       child()
-+   else:
-+       os.waitpid(pid, 0)
-+ 
+                    <pre><code class="language-diff"> def run():
++    os.unshare(os.CLONE_NEWUTS)
+     cmd = sys.argv[2:]
+     os.execvp(cmd[0], cmd)
+                    </code></pre>
+                </section>
+                <section>
+                    <h2>What went wrong?</h2>
+                    <pre><code class="language-bash">
+$ python main.py run /bin/sh
+Hello, New World!
+                    </code></pre>
+                </section>
+                <section>
+                    <h2>Let's fix it</h2>
+                    <pre><code class="language-diff"> def run():
+     os.unshare(os.CLONE_NEWUTS)
++    pid = os.fork()
++    if pid == 0:
++        child()
++    else:
++        os.waitpid(pid, 0)
++  
 +def child():
-+   subprocess.run(["hostname", "container"])
-    cmd = sys.argv[2:]
-    os.execvp(cmd[0], cmd)
+     cmd = sys.argv[2:]
+     os.execvp(cmd[0], cmd)
+                    </code></pre>
+                </section>
+                <section>
+                    <h2>Let's add a default hostname to the container</h2>
+                    <pre><code class="language-diff"> import os
+ import sys 
++import subprocess                   
+ ...
+
+  
+ def child():
++    subprocess.run(["hostname", "container"])
+     cmd = sys.argv[2:]
+     os.execvp(cmd[0], cmd)
                     </code></pre>
                 </section>
                 <section>
                     <h2>foo</h2>
-                    <pre><code class="language-diff">def run():
--   os.unshare(os.CLONE_NEWUTS)
-+   os.unshare(os.CLONE_NEWUTS | os.CLONE_NEWPID)
+                    <pre><code class="language-diff"> def run():
+-    os.unshare(os.CLONE_NEWUTS)
++    os.unshare(os.CLONE_NEWUTS | os.CLONE_NEWPID)
 ...
 
-def child():
-    subprocess.run(["hostname", "container"])
-+   os.chroot("tinyroot")
-+   os.chdir("/")
-+   os.makedirs("/proc", exist_ok=True)
-+   subprocess.run(["mount", "-t", "proc", "proc", "/proc"])
-    cmd = sys.argv[2:]
-    os.execvp(cmd[0], cmd)
+ def child():
+     subprocess.run(["hostname", "container"])
++    os.chroot("tinyroot")
++    os.chdir("/")
++    os.makedirs("/proc", exist_ok=True)
++    subprocess.run(["mount", "-t", "proc", "proc", "/proc"])
+     cmd = sys.argv[2:]
+     os.execvp(cmd[0], cmd)
                     </code></pre>
                 </section>
                 <section>
                     <h2>clean mount</h2>
-                    <pre><code class="language-diff">def child():
-    subprocess.run(["hostname", "container"])
-    os.chroot("tinyroot")
-    os.chdir("/")
-    os.makedirs("/proc", exist_ok=True)
-    subprocess.run(["mount", "-t", "proc", "proc", "/proc"])
-    cmd = sys.argv[2:]
-+   pid = os.fork()
-+   if pid == 0:
-        os.execvp(cmd[0], cmd)
-+   else:
-+       os.waitpid(pid, 0)
-+       subprocess.run(["umount", "/proc"])
+                    <pre><code class="language-diff"> def child():
+     subprocess.run(["hostname", "container"])
+     os.chroot("tinyroot")
+     os.chdir("/")
+     os.makedirs("/proc", exist_ok=True)
+     subprocess.run(["mount", "-t", "proc", "proc", "/proc"])
+     cmd = sys.argv[2:]
++    pid = os.fork()
++    if pid == 0:
+         os.execvp(cmd[0], cmd)
++    else:
++        os.waitpid(pid, 0)
++        subprocess.run(["umount", "/proc"])
 
                     </code></pre>
                 </section>
@@ -272,18 +304,18 @@ def child():
                 </section>
                 <section>
                     <h2>Cgroup</h2>
-                    <pre><code class="language-diff">def child():
-    subprocess.run(["hostname", "container"])
-+   cgroup()
+                    <pre><code class="language-diff"> def child():
+     subprocess.run(["hostname", "container"])
++    cgroup()
 ...
 
-+def cgroup():
-+    path = "/sys/fs/cgroup/soprasteria"
-+    os.makedirs(path, exist_ok=True)
-+    with open(os.path.join(path, "pids.max"), "w") as f:
-+        f.write("20")
-+    with open(os.path.join(path, "cgroup.procs"), "w") as f:
-+        f.write(str(os.getpid()))
++ def cgroup():
++     path = "/sys/fs/cgroup/soprasteria"
++     os.makedirs(path, exist_ok=True)
++     with open(os.path.join(path, "pids.max"), "w") as f:
++         f.write("20")
++     with open(os.path.join(path, "cgroup.procs"), "w") as f:
++         f.write(str(os.getpid()))
                     </code></pre>
                 </section>
                 <section>
