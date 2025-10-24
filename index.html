@@ -143,7 +143,7 @@
                     <h2>Building container from scratch</h2>
                 </section>
                 <section>
-                    <h2>Main container's primitives</h2>
+                    <h2>Linux concepts for a container</h2>
                     <div style="display: flex; align-items: center; justify-content: space-between;">
                         <div style="width: 30%;">
                             <ul>
@@ -168,8 +168,8 @@ def run():
 # docker         run image cmd params
 # python main.py run       cmd params
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python main.py run <command> [args...]")
+    if len(sys.argv) \< 2:
+        print("Usage: python main.py run \<command\> [args...]")
         sys.exit(1)
 
     if sys.argv[1] == "run":
@@ -217,15 +217,14 @@ if __name__ == "__main__":
                     </code></pre>
                 </section>
                 <section>
-                    <h2>What went wrong?</h2>
-                    <pre><code class="language-bash">
-$ python main.py run /bin/sh
-Hello, New World!
-                    </code></pre>
-                </section>
-                <section>
-                    <h2>Let's fix it</h2>
-                    <pre><code class="language-diff"> def run():
+                    <h2>Let's add a default hostname to the container</h2>
+                    <pre><code class="language-diff"> import os
+ import sys 
++import subprocess                   
+ ...
+
+  
+ def run():
      os.unshare(os.CLONE_NEWUTS)
 +    pid = os.fork()
 +    if pid == 0:
@@ -234,19 +233,6 @@ Hello, New World!
 +        os.waitpid(pid, 0)
 +  
 +def child():
-     cmd = sys.argv[2:]
-     os.execvp(cmd[0], cmd)
-                    </code></pre>
-                </section>
-                <section>
-                    <h2>Let's add a default hostname to the container</h2>
-                    <pre><code class="language-diff"> import os
- import sys 
-+import subprocess                   
- ...
-
-  
- def child():
 +    subprocess.run(["hostname", "container"])
      cmd = sys.argv[2:]
      os.execvp(cmd[0], cmd)
