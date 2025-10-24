@@ -168,8 +168,8 @@ def run():
 # docker         run image cmd params
 # python main.py run       cmd params
 def main():
-    if len(sys.argv) \< 2:
-        print("Usage: python main.py run \<command\> [args...]")
+    if len(sys.argv) < 2:
+        print("Usage: python main.py run command [args...]")
         sys.exit(1)
 
     if sys.argv[1] == "run":
