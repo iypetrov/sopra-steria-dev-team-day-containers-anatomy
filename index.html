@@ -244,7 +244,23 @@ if __name__ == "__main__":
                     </code></pre>
                 </section>
                 <section>
-                    <h2>foo</h2>
+                    <h2>What is /proc directory</h2>
+                    <ul>
+                        <li><strong>/proc</strong> is a virtual filesystem that the Linux kernel populates at runtime.</li>
+                        <li>It contains information about running processes and kernel state</li>
+                        <li><strong>ps</strong> commoand uses <strong>/proc</strong> under the hood.</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>What should we do to restrict our container to see only its proccesses?</h2>
+                    <ul>
+                        <li>Will create a tinyroot filesystem based on BusyBox for the demo using the Makefile.</li>
+                        <li>Will use the <strong>chroot</strong> system call to change the root directory of the container process to the tinyroot filesystem.</li>
+                        <li>Will mount a new <strong>/proc</strong> filesystem inside the container's namespace to provide process information specific to the container.</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Here is the needed change</h2>
                     <pre><code class="language-diff"> def run():
 -    os.unshare(os.CLONE_NEWUTS)
 +    os.unshare(os.CLONE_NEWUTS | os.CLONE_NEWPID)
@@ -261,7 +277,7 @@ if __name__ == "__main__":
                     </code></pre>
                 </section>
                 <section>
-                    <h2>clean mount</h2>
+                    <h2>let's not forget to unmount /proc after the command execution</h2>
                     <pre><code class="language-diff"> def child():
      subprocess.run(["hostname", "container"])
      os.chroot("tinyroot")
@@ -294,14 +310,14 @@ if __name__ == "__main__":
                     </ul>
                 </section>
                 <section>
-                    <h2>Cgroup</h2>
+                    <h2>Let's create a Cgroup, that restricts the number of processes up to 20</h2>
                     <pre><code class="language-diff"> def child():
      subprocess.run(["hostname", "container"])
 +    cgroup()
 ...
 
 + def cgroup():
-+     path = "/sys/fs/cgroup/soprasteria"
++     path = "/sys/fs/cgroup/system.slice/soprasteria"
 +     os.makedirs(path, exist_ok=True)
 +     with open(os.path.join(path, "pids.max"), "w") as f:
 +         f.write("20")
